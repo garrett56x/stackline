@@ -6,13 +6,15 @@ export type Product = {
   image: string;
   subtitle: string;
   brand: string;
-  reviews: {
-    customer: string;
-    review: string;
-    score: number;
-  }[];
+  reviews: Review[];
   retailer: string;
   details: string[];
   tags: string[];
   sales: Sale[];
+};
+
+type Review = {
+  customer: string;
+  review: string;
+  score: number;
 };

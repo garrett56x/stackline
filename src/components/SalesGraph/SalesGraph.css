@@ -1,0 +1,19 @@
+.salesGraph {
+  padding: 0 20px;
+}
+
+.salesGraphTitle {
+  font-weight: 400;
+}
+
+.months {
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 20px;
+  border-top: solid #f6f8fa 1px;
+}
+
+.month {
+  color: grey;
+  text-transform: uppercase;
+}

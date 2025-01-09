@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Sale } from "../../types/Sale";
 import "./SalesTable.css";
+import { formatCurrency, formatDate } from "../../utils/formatters.ts";
 
 interface SalesTableProps {
   sales: Sale[];
@@ -16,11 +17,11 @@ const SalesTable = ({ sales }: SalesTableProps) => {
   });
 
   const sortData = (
-    data: any[],
+    data: Sale[],
     key: string,
     direction: "ascending" | "descending"
   ) => {
-    return data.sort((a, b) => {
+    return [...data].sort((a, b) => {
       if (a[key] < b[key]) {
         return direction === "ascending" ? -1 : 1;
       }
@@ -44,17 +45,6 @@ const SalesTable = ({ sales }: SalesTableProps) => {
     sortConfig.key,
     sortConfig.direction
   );
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date
-      .toLocaleDateString("en-US", {
-        year: "2-digit",
-        month: "2-digit",
-        day: "2-digit",
-      })
-      .replace(/\//g, "-");
-  };
 
   return (
     <div>
@@ -117,25 +107,10 @@ const SalesTable = ({ sales }: SalesTableProps) => {
           {sortedSales.map((sale, index) => (
             <tr key={index}>
               <td>{formatDate(sale.weekEnding)}</td>
-              <td>
-                {(sale.retailSales / 100).toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })}
-              </td>
-              <td>
-                {(sale.wholesaleSales / 100).toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })}
-              </td>
+              <td>{formatCurrency(sale.retailSales / 100)}</td>
+              <td>{formatCurrency(sale.wholesaleSales / 100)}</td>
               <td>{sale.unitsSold}</td>
-              <td>
-                {(sale.retailerMargin / 100).toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })}
-              </td>
+              <td>{formatCurrency(sale.retailerMargin / 100)}</td>
             </tr>
           ))}
         </tbody>

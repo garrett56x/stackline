@@ -51,17 +51,6 @@
   white-space: nowrap;
 }
 
-.months {
-  display: flex;
-  justify-content: space-between;
-  padding: 30px 20px;
-  border-top: solid #f6f8fa 1px;
-}
-
-.month {
-  color: grey;
-}
-
 @media only screen and (max-width: 1300px) {
   .productDashboard {
     flex-direction: column;

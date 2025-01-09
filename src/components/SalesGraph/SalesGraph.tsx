@@ -11,6 +11,9 @@ import {
   Legend,
 } from "chart.js";
 import { Sale } from "../../types/Sale";
+import { formatCurrency } from "../../utils/formatters.ts";
+import { movingAverage } from "../../utils/math.ts";
+import "./SalesGraph.css";
 
 ChartJS.register(
   CategoryScale,
@@ -26,17 +29,46 @@ interface SalesGraphProps {
   sales: Sale[];
 }
 
+const getTooltipLabel = (
+  context: any,
+  retailData: number[],
+  retailerMarginData: number[]
+): string => {
+  const index = context.dataIndex;
+  const label =
+    context.dataset.label === "Retailer Margin"
+      ? "Retailer Margin"
+      : "Retail Sales";
+  const originalValue =
+    context.dataset.label === "Retailer Margin"
+      ? retailerMarginData[index]
+      : retailData[index];
+  return `${label}: ${formatCurrency(originalValue / 100)}`;
+};
+
+const months = Array.from({ length: 12 }, (_, i) =>
+  new Intl.DateTimeFormat("en-US", { month: "short" }).format(new Date(0, i))
+);
+
 const SalesGraph = ({ sales }: SalesGraphProps) => {
+  if (!sales.length) {
+    return <p>No data available</p>;
+  }
+
   const labels = sales.map((sale) => sale.weekEnding);
   const retailData = sales.map((sale) => sale.retailSales);
   const retailerMarginData = sales.map((sale) => sale.retailerMargin);
+
+  // Smooth the retail and retailer margin data for nicer display
+  const smoothedRetailData = movingAverage(retailData, 10); // 10-point moving average
+  const smoothedRetailerMarginData = movingAverage(retailerMarginData, 10);
 
   const chartData = {
     labels: labels,
     datasets: [
       {
         label: "Retail Sales",
-        data: retailData,
+        data: smoothedRetailData,
         fill: false,
         tension: 0.4,
         backgroundColor: "#4BABF6",
@@ -45,7 +77,7 @@ const SalesGraph = ({ sales }: SalesGraphProps) => {
       },
       {
         label: "Retailer Margin",
-        data: retailerMarginData,
+        data: smoothedRetailerMarginData,
         fill: false,
         tension: 0.4,
         backgroundColor: "#99A4BE",
@@ -60,6 +92,13 @@ const SalesGraph = ({ sales }: SalesGraphProps) => {
       legend: {
         display: false,
       },
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          label: (context) =>
+            getTooltipLabel(context, retailData, retailerMarginData),
+        },
+      },
     },
     scales: {
       y: {
@@ -71,7 +110,24 @@ const SalesGraph = ({ sales }: SalesGraphProps) => {
     },
   };
 
-  return <Line data={chartData} options={options} />;
+  return (
+    <div>
+      <div className="salesGraph">
+        <h2 className="salesGraphTitle">Retail Sales</h2>
+        {/* typescript not accepting pointStyle: false (wants a string)
+        pointStyle: false in chart.js docs https://www.chartjs.org/docs/latest/samples/line/point-styling.html */}
+        {/* @ts-ignore */}
+        <Line data={chartData} options={options} />
+      </div>
+      <div className="months">
+        {months.map((month, i) => (
+          <div key={i} className="month">
+            {month}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default SalesGraph;
