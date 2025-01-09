@@ -1,0 +1,37 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  cursor: pointer;
+  padding: 20px 10px;
+  color: grey;
+  text-transform: uppercase;
+}
+
+th:hover {
+  background-color: #f0f0f0;
+}
+
+td {
+  padding: 10px;
+  text-align: center;
+  color: grey;
+}
+
+tr {
+  border-top: solid #f6f8fa 1px;
+}
+
+th.sorted-ascending::after {
+  content: " \2193";
+  font-size: 12px;
+  color: silver;
+}
+
+th.sorted-descending::after {
+  content: " \2191";
+  font-size: 12px;
+  color: silver;
+}
